@@ -7,6 +7,7 @@ import {
   editProduct,
   getProductList,
   searchProduct,
+  getProductDetails
 } from "../controllers/productController.js";
 
 // importing the verification function
@@ -18,9 +19,10 @@ import { multerUpload } from "../middlewares/multer/multerConfig.js";
 const router = express.Router();
 router
   .route("/create")
-  .post(multerUpload.single("photo"), createProduct);
+  .post(multerUpload.array("photos"), createProduct);
 
 router.route("/list").get(getProductList);
+router.route("/:id").get(getProductDetails);
 // delete and update product
 router
   .route("/action/:id")

@@ -8,9 +8,21 @@ export const uploadImage = async (req, res) => {
     api_secret: process.env.CLOUDINARY_API_SECRET,
   });
 
+  if (!req.files) return new ErrorHandler(500, "No Files Found To Upload");
+
+  const promises = req.files.map(async (file) => {
+    const image_link = await uploadImageToCloudinary(file);
+    return image_link;
+  });
+
+  const imageLinks = await Promise.all(promises);
+  return imageLinks
+};
+
+const uploadImageToCloudinary = async (file) => {
   try {
     // Upload the image to Cloudinary and wait for the result
-    const result = await cloudinary.uploader.upload(req.file.path);
+    const result = await cloudinary.uploader.upload(file.path);
     // Cloudinary response contains the image URL
     return result.secure_url;
   } catch (err) {

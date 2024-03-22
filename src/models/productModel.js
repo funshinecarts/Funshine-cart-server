@@ -19,10 +19,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Product description is required."],
     },
-    photo: {
+    photos: [{
       type: String,
       required: [true, "Product photo is required."],
-    },
+    }],
     stock: {
       type: Number,
       required: [true, "Product stock is required."],

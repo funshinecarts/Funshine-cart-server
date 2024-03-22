@@ -9,15 +9,14 @@ import { uploadImage } from "../utils/uploadImage/uploadImage.js";
 
 // Controller Function To Add a Product To DB
 export const createProduct = catchAsyncError(async (req, res, next) => {
-  const image = await uploadImage(req, res, next);
-
+  const photos = await uploadImage(req, res, next);
 
 
   // storing the product on database
   // add a random productId to each product make sure don't repeat
   const productId = Math.floor(100000 + Math.random() * 900000);
 
-  const product = await Product.create({ ...req.body, photo: image, productId });
+  const product = await Product.create({ ...req.body, photos, productId });
   res.status(200).json({
     success: true,
     message: "Product Added Successfully",
@@ -27,6 +26,18 @@ export const createProduct = catchAsyncError(async (req, res, next) => {
 
 
 
+});
+
+// Controller function to get all products with total stock and branch-wise stock
+export const getProductDetails = catchAsyncError(async (req, res, next) => {
+  // Fetch single products
+  const { id } = req.params;
+  const product = await Product.findById(id);
+
+  res.status(200).json({
+    success: true,
+    product
+  });
 });
 
 // Controller function to get all products with total stock and branch-wise stock
@@ -49,11 +60,6 @@ export const deleteProduct = catchAsyncError(async (req, res, next) => {
 
   // getting the product first from the database to get image url
   const product = await Product.findById(id);
-  // parsing the photoUrl
-  const photoUrl = product.photo.split("/products/")[1];
-
-  // deleting the product photo from server
-  deleteFile("products", photoUrl);
 
   // deleting the product
   await Product.findByIdAndDelete(id);
